@@ -14,9 +14,9 @@ class ReadMeme(BaseModel):
 
 class UpdateMeme(BaseModel):
     id: int
-    title: str
-    image_url: str
-    author_name: str
+    title: str | None = None
+    image_url: str | None = None
+    author_name: str | None = None
     app_token: str
 
 
