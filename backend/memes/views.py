@@ -1,11 +1,9 @@
 import memes.schemes as schemes
 from crud import (
     Objects,
-    Object,
     SuggestedObjects,
-    SuggestedObject,
 )
-from backend.data.config import settings
+from data.config import settings
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from models.engine import session_factory

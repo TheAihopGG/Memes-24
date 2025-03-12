@@ -1,5 +1,5 @@
 import memes.views
-from backend.data.config import settings
+from data.config import settings
 from fastapi import APIRouter
 
 
