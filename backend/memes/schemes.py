@@ -30,9 +30,9 @@ class SuggestMeme(BaseModel):
     author_name: str
 
 
-class ApproveMeme(BaseModel):
+class ApproveSuggestedMeme(BaseModel):
     id: int
 
 
-class RejectMeme(BaseModel):
+class RejectSuggestedMeme(BaseModel):
     id: int
