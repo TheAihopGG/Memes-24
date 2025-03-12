@@ -45,9 +45,9 @@ async def read_meme(query: schemes.ReadMeme) -> JSONResponse:
                 "title": meme.title,
                 "image_url": meme.image_url,
                 "author_name": meme.author_name,
-                "created_at": meme.created_at,
-                "updated_at": meme.updated_at,
-            },
+                "created_at": meme.created_at.strftime("%Y-%m-%d %H:%M:%S.%f"),
+                "updated_at": meme.updated_at.strftime("%Y-%m-%d %H:%M:%S.%f"),
+            }
         )
 
     else:
@@ -61,7 +61,7 @@ async def update_meme(query: schemes.UpdateMeme) -> JSONResponse:
             meme = await Objects.update(
                 session,
                 id=query.id,
-                title=query.id,
+                title=query.title,
                 image_url=query.image_url,
                 author_name=query.author_name,
             )
@@ -119,7 +119,7 @@ async def approve_suggested_meme(query: schemes.ApproveSuggestedMeme) -> JSONRes
             return JSONResponse({})
 
         else:
-            return JSONResponse({}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JSONResponse({}, status.HTTP_404_NOT_FOUND)
 
     else:
         return JSONResponse({}, status.HTTP_403_FORBIDDEN)
@@ -136,6 +136,31 @@ async def reject_suggested_meme(query: schemes.RejectSuggestedMeme) -> JSONRespo
 
         else:
             return JSONResponse({}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    else:
+        return JSONResponse({}, status.HTTP_403_FORBIDDEN)
+
+
+@router.get("/suggested_memes")
+async def get_suggested_memes(query: schemes.GetSuggestedMemes) -> JSONResponse:
+    if query.app_token == settings.app_token:
+        async with session_factory() as session:
+            suggested_memes = [
+                {
+                    "id": suggested_meme.id,
+                    "title": suggested_meme.title,
+                    "image_url": suggested_meme.image_url,
+                    "author_name": suggested_meme.author_name,
+                    "created_at": suggested_meme.created_at.strftime(
+                        "%Y-%m-%d %H:%M:%S.%f"
+                    ),
+                }
+                for suggested_meme in (
+                    column[0] for column in await SuggestedObjects.read_all(session)
+                )
+            ]
+
+        return JSONResponse({"suggested_memes": suggested_memes})
 
     else:
         return JSONResponse({}, status.HTTP_403_FORBIDDEN)
