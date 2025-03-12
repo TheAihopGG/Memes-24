@@ -22,6 +22,7 @@ class UpdateMeme(BaseModel):
 
 class DeleteMeme(BaseModel):
     id: int
+    app_token: str
 
 
 class SuggestMeme(BaseModel):
@@ -32,7 +33,9 @@ class SuggestMeme(BaseModel):
 
 class ApproveSuggestedMeme(BaseModel):
     id: int
+    app_token: str
 
 
 class RejectSuggestedMeme(BaseModel):
     id: int
+    app_token: str
