@@ -1,4 +1,5 @@
 import uvicorn
+import api_v1.views
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from models import (
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.include_router(api_v1.views.router)
 
 if __name__ == "__main__":
     uvicorn.run(
