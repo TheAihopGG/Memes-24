@@ -6,20 +6,20 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class DBSettings(BaseModel):
-    path = BASE_DIR / "data" / "database.db"
-    url = f"sqlite+aiosqlite:///{path}"
-    echo = True
+    path: str = BASE_DIR / "data" / "database.db"
+    url: str = f"sqlite+aiosqlite:///{path}"
+    echo: bool = True
 
 
 class Prefixes(BaseModel):
-    api = "/api"
-    memes = "/memes"
+    api: str = "/api"
+    memes: str = "/memes"
 
 
 class Settings(BaseModel):
-    db = DBSettings()
-    prefixes = Prefixes()
-    app_token = "12345"
+    db: DBSettings = DBSettings()
+    prefixes: Prefixes = Prefixes()
+    app_token: str = "12345"
 
 
 settings = Settings()
