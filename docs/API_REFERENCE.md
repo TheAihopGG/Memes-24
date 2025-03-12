@@ -165,3 +165,17 @@ JSON-data:
     "app_token": "..."
 }
 ```
+
+### GetSuggestedMemes
+
+|Method|Url|Description|
+|------|---|-----------|
+|GET|`/memes/suggested_memes`|Rejects a Suggested meme|
+
+JSON-data:
+
+```json
+{
+    "app_token": "..."
+}
+```
