@@ -19,7 +19,7 @@ class Prefixes(BaseModel):
 class Settings(BaseModel):
     db = DBSettings()
     prefixes = Prefixes()
-    app_token = "12345"
+    app_token = "your token"
 
 
 settings = Settings()
