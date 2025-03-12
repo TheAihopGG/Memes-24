@@ -73,7 +73,7 @@ class Objects:
         return object
 
 
-class RequestedObjects:
+class SuggestedObjects:
     @staticmethod
     async def create(
         session: AsyncSession,
@@ -143,13 +143,13 @@ async def test_objects_crud(session: AsyncSession):
 
 
 async def test_requested_objects_crud(session: AsyncSession):
-    await RequestedObjects.create(
+    await SuggestedObjects.create(
         session,
         "Test1",
         "url",
         "Alex",
     )
-    await RequestedObjects.create(
+    await SuggestedObjects.create(
         session,
         "Test2",
         "url",
