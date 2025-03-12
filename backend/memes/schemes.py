@@ -39,3 +39,7 @@ class ApproveSuggestedMeme(BaseModel):
 class RejectSuggestedMeme(BaseModel):
     id: int
     app_token: str
+
+
+class GetSuggestedMemes(BaseModel):
+    app_token: str

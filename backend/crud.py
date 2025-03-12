@@ -4,6 +4,7 @@ from models import (
     Object,
     SuggestedObject,
 )
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.engine import session_factory
 
@@ -160,6 +161,10 @@ class SuggestedObjects:
         id: int,
     ) -> SuggestedObject | None:
         return await SuggestedObjects.delete(session, id)
+
+    @staticmethod
+    async def read_all(session: AsyncSession) -> list[SuggestedObject]:
+        return await session.execute(select(SuggestedObject))
 
 
 async def test_objects_crud(session: AsyncSession):
