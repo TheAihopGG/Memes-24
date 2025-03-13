@@ -83,6 +83,20 @@ JSON-data:
 }
 ```
 
+### ReadMemeByTags
+
+|Method|Url|Description|
+|------|---|-----------|
+|GET|`/memes/tags`|Responses with a memes with the specified tags|
+
+JSON-data:
+
+```json
+{
+    "tags": ["tag1", "tag2"]
+}
+```
+
 ### UpdateMeme
 
 |Method|Url|Description|
