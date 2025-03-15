@@ -14,12 +14,12 @@ class Objects:
     async def create(
         session: AsyncSession,
         title: str,
-        image_url: str,
+        image: bytes,
         author_name: str | None,
     ) -> Object:
         object = Object(
             title=title,
-            image_url=image_url,
+            image=image,
             author_name=author_name or "Unknown",
         )
         session.add(object)
@@ -42,7 +42,7 @@ class Objects:
         session: AsyncSession,
         id: int,
         title: str | None = None,
-        image_url: str | None = None,
+        image: bytes | None = None,
         author_name: str | None = None,
     ) -> Object | None:
         object = await session.get(
@@ -51,7 +51,7 @@ class Objects:
         )
         if object:
             object.title = title or object.title
-            object.image_url = image_url or object.image_url
+            object.image = image or object.image
             object.author_name = author_name or object.author_name
             object.updated_at = datetime.now()
             await session.commit()
@@ -171,7 +171,7 @@ async def test_objects_crud(session: AsyncSession):
     await Objects.create(
         session,
         "Test1",
-        "url",
+        open("./photo.png", "rb").read(),
         "Alex",
     )
     obj1 = await Objects.read(session, 1)
@@ -180,11 +180,10 @@ async def test_objects_crud(session: AsyncSession):
         session,
         1,
         "Test2",
-        "url2",
     )
     obj1 = await Objects.read(session, 1)
     print(obj1.title)
-    await Objects.delete(session, 1)
+    # await Objects.delete(session, 1)
 
 
 async def test_requested_objects_crud(session: AsyncSession):
