@@ -1,8 +1,8 @@
 import uvicorn
-import api_v1.views
+from routers import api_v1
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from models import (
+from core import (
     Base,
     engine,
 )

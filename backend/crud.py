@@ -1,41 +1,42 @@
 import asyncio
 from datetime import datetime
-from models import (
-    Object,
-    SuggestedObject,
+from core import (
+    Meme,
+    SuggestedMeme,
+    Tag,
 )
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.engine import session_factory
+from core import session_factory
 
 
-class Objects:
+class Memes:
     @staticmethod
     async def create(
         session: AsyncSession,
-        title: str,
         image: bytes,
-        author_name: str | None,
-    ) -> Object:
-        object = Object(
+        author_name: str | None = None,
+        title: str | None = None,
+    ) -> Meme:
+        meme = Meme(
             title=title,
             image=image,
-            author_name=author_name or "Unknown",
+            author_name=author_name,
         )
-        session.add(object)
+        session.add(meme)
         await session.commit()
-        return object
+        return meme
 
     @staticmethod
     async def read(
         session: AsyncSession,
         id: int,
-    ) -> Object | None:
-        object = await session.get(
-            Object,
+    ) -> Meme | None:
+        meme = await session.get(
+            Meme,
             id,
         )
-        return object
+        return meme
 
     @staticmethod
     async def update(
@@ -44,47 +45,47 @@ class Objects:
         title: str | None = None,
         image: bytes | None = None,
         author_name: str | None = None,
-    ) -> Object | None:
-        object = await session.get(
-            Object,
+    ) -> Meme | None:
+        meme = await session.get(
+            Meme,
             id,
         )
-        if object:
-            object.title = title or object.title
-            object.image = image or object.image
-            object.author_name = author_name or object.author_name
-            object.updated_at = datetime.now()
+        if meme:
+            meme.title = title or meme.title
+            meme.image = image or meme.image
+            meme.author_name = author_name or meme.author_name
+            meme.updated_at = datetime.now()
             await session.commit()
 
-        return object
+        return meme
 
     @staticmethod
     async def delete(
         session: AsyncSession,
         id: int,
-    ) -> Object | None:
-        object = await session.get(
-            Object,
+    ) -> Meme | None:
+        meme = await session.get(
+            Meme,
             id,
         )
-        if object:
-            await session.delete(object)
+        if meme:
+            await session.delete(meme)
             await session.commit()
 
-        return object
+        return meme
 
 
-class SuggestedObjects:
+class SuggestedMemes:
     @staticmethod
-    async def read(
+    async def get(
         session: AsyncSession,
         id: int,
-    ) -> SuggestedObject | None:
-        suggested_object = await session.get(
-            SuggestedObject,
+    ) -> SuggestedMeme | None:
+        suggested_meme = await session.get(
+            SuggestedMeme,
             id,
         )
-        return suggested_object
+        return suggested_meme
 
     @staticmethod
     async def update(
@@ -93,34 +94,34 @@ class SuggestedObjects:
         title: str | None = None,
         image_url: str | None = None,
         author_name: str | None = None,
-    ) -> SuggestedObject | None:
-        suggested_object = await session.get(
-            SuggestedObject,
+    ) -> SuggestedMeme | None:
+        suggested_meme = await session.get(
+            SuggestedMeme,
             id,
         )
-        if suggested_object:
-            suggested_object.title = title or suggested_object.title
-            suggested_object.image_url = image_url or suggested_object.image_url
-            suggested_object.author_name = author_name or suggested_object.author_name
-            suggested_object.updated_at = datetime.now()
+        if suggested_meme:
+            suggested_meme.title = title or suggested_meme.title
+            suggested_meme.image_url = image_url or suggested_meme.image_url
+            suggested_meme.author_name = author_name or suggested_meme.author_name
+            suggested_meme.updated_at = datetime.now()
             await session.commit()
 
-        return suggested_object
+        return suggested_meme
 
     @staticmethod
     async def delete(
         session: AsyncSession,
         id: int,
-    ) -> SuggestedObject | None:
-        suggested_object = await session.get(
-            SuggestedObject,
+    ) -> SuggestedMeme | None:
+        suggested_meme = await session.get(
+            SuggestedMeme,
             id,
         )
-        if suggested_object:
-            await session.delete(suggested_object)
+        if suggested_meme:
+            await session.delete(suggested_meme)
             await session.commit()
 
-        return suggested_object
+        return suggested_meme
 
     @staticmethod
     async def create(
@@ -128,85 +129,108 @@ class SuggestedObjects:
         title: str,
         image_url: str,
         author_name: str | None,
-    ) -> SuggestedObject:
-        requested_object = SuggestedObject(
+    ) -> SuggestedMeme:
+        requested_meme = SuggestedMeme(
             title=title,
             image_url=image_url,
             author_name=author_name or "Unknown",
         )
-        session.add(requested_object)
+        session.add(requested_meme)
         await session.commit()
-        return requested_object
+        return requested_meme
 
     @staticmethod
     async def approve(
         session: AsyncSession,
         id: int,
-    ) -> SuggestedObject | None:
-        suggested_object = await SuggestedObjects.read(session, id)
-        if suggested_object:
-            await Objects.create(
+    ) -> SuggestedMeme | None:
+        suggested_meme = await SuggestedMemes.get(session, id)
+        if suggested_meme:
+            await Memes.create(
                 session,
-                title=suggested_object.title,
-                image_url=suggested_object.image_url,
-                author_name=suggested_object.author_name,
+                title=suggested_meme.title,
+                image_url=suggested_meme.image_url,
+                author_name=suggested_meme.author_name,
             )
-            await SuggestedObjects.delete(session, suggested_object.id)
+            await SuggestedMemes.delete(session, suggested_meme.id)
 
-        return suggested_object
+        return suggested_meme
 
     @staticmethod
     async def reject(
         session: AsyncSession,
         id: int,
-    ) -> SuggestedObject | None:
-        return await SuggestedObjects.delete(session, id)
+    ) -> SuggestedMeme | None:
+        return await SuggestedMemes.delete(session, id)
 
     @staticmethod
-    async def read_all(session: AsyncSession) -> list[SuggestedObject]:
-        return await session.execute(select(SuggestedObject))
+    async def get_all(session: AsyncSession) -> list[SuggestedMeme]:
+        return await session.execute(select(SuggestedMeme))
 
 
-async def test_objects_crud(session: AsyncSession):
-    await Objects.create(
-        session,
-        "Test1",
-        open("./photo.png", "rb").read(),
-        "Alex",
-    )
-    obj1 = await Objects.read(session, 1)
-    print(obj1.title)
-    await Objects.update(
-        session,
-        1,
-        "Test2",
-    )
-    obj1 = await Objects.read(session, 1)
-    print(obj1.title)
-    # await Objects.delete(session, 1)
+class Tags:
+    @staticmethod
+    async def create(
+        session: AsyncSession,
+        name: str,
+    ) -> Tag:
+        tag = Tag(name=name)
+        session.add(tag)
+        await session.commit()
+        return tag
+
+    @staticmethod
+    async def get(
+        session: AsyncSession,
+        id: int,
+    ) -> Tag | None:
+        tag = await session.get(
+            Tag,
+            id,
+        )
+        return tag
+
+    @staticmethod
+    async def update(
+        session: AsyncSession,
+        id: int,
+        name: str | None = None,
+    ) -> Tag | None:
+        tag = await session.get(
+            Tag,
+            id,
+        )
+        if tag:
+            tag.name = name or tag.name
+            await session.commit()
+
+        return tag
+
+    @staticmethod
+    async def delete(
+        session: AsyncSession,
+        id: str,
+    ) -> Tag | None:
+        tag = await session.get(
+            Tag,
+            id,
+        )
+        if tag:
+            await session.delete(tag)
+            await session.commit()
+
+        return tag
 
 
-async def test_requested_objects_crud(session: AsyncSession):
-    await SuggestedObjects.create(
-        session,
-        "Test1",
-        "url",
-        "Alex",
-    )
-    await SuggestedObjects.create(
-        session,
-        "Test2",
-        "url",
-        "Alex",
-    )
-    # await RequestedObjects.approve(session, 1)
-    # await RequestedObjects.reject(session, 2)
+async def create_memes(session: AsyncSession):
+    await Memes.create(session, image=open("./photo.jpeg", "rb").read())
+    await Memes.create(session, image=open("./photo.jpeg", "rb").read())
+    await Memes.create(session, image=open("./photo.jpeg", "rb").read())
 
 
 async def main():
     async with session_factory() as session:
-        # await test_objects_crud(session)
-        # await test_requested_objects_crud(session)
+        # await create_memes(session)
         pass
 
 

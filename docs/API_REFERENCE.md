@@ -7,7 +7,7 @@ All links are relative to `https:/localhost:8000`.
 
 - [Memes (CRUD)](#memes-crud)
     - [CreateMeme](#creatememe)
-    - [ReadMeme](#readmeme)
+    - [GetMeme](#readmeme)
     - [UpdateMeme](#updatememe)
     - [DeleteMeme](#deletememe)
 - [Suggested memes](#suggested-memes)
@@ -50,6 +50,17 @@ The table contains memes that users suggest adding to the `memes` table
 - `author_name` 
 - `created_at`  
 
+#### Tags
+
+**Description**
+
+*Tags realization in progress*
+
+**Data**
+
+- `id`          
+- `name`    
+
 ## Memes (CRUD)
 
 ### CreateMeme
@@ -69,7 +80,7 @@ JSON-data:
 }
 ```
 
-### ReadMeme
+### GetMeme
 
 |Method|Url|Description|
 |------|---|-----------|
@@ -80,20 +91,6 @@ JSON-data:
 ```json
 {
     "id": "..." // meme id
-}
-```
-
-### ReadMemeByTags
-
-|Method|Url|Description|
-|------|---|-----------|
-|GET|`/memes/tags`|Responses with a memes with the specified tags|
-
-JSON-data:
-
-```json
-{
-    "tags": ["tag1", "tag2"]
 }
 ```
 
@@ -190,6 +187,67 @@ JSON-data:
 
 ```json
 {
+    "app_token": "..."
+}
+```
+
+## Tags
+
+### CreateTag
+
+|Method|Url|Description|
+|------|---|-----------|
+|POST|`/tags/create`|Creates a tag|
+
+JSON-data:
+
+```json
+{
+    "tag_name":"...",
+    "app_token": "..."
+}
+```
+
+### GetTag
+
+|Method|Url|Description|
+|------|---|-----------|
+|GET|`/tags/get`|Responses a tag|
+
+JSON-data:
+
+```json
+{
+    "tag_id":"..."
+}
+```
+
+### UpdateTag
+
+|Method|Url|Description|
+|------|---|-----------|
+|PUT|`/tags/update`|Updates a tag|
+
+JSON-data:
+
+```json
+{
+    "tag_id":"...",
+    "tag_name":"..."
+}
+```
+
+### DeleteTag
+
+|Method|Url|Description|
+|------|---|-----------|
+|DELETE|`/tags/delete`|Deletes a tag|
+
+JSON-data:
+
+```json
+{
+    "tag_id":"...", // tag id
     "app_token": "..."
 }
 ```
