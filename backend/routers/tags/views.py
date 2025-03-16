@@ -27,7 +27,6 @@ async def get_tag(query: schemes.GetTag):
         tag = await Tags.get(
             session,
             id=query.id,
-            name=query.name,
         )
 
     if tag:

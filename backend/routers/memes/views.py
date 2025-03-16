@@ -15,7 +15,7 @@ async def create_meme(query: schemes.CreateMeme) -> JSONResponse:
             result = await Memes.create(
                 session,
                 title=query.title,
-                image_url=query.image_url,
+                image=query.image,
                 author_name=query.author_name,
             )
 
@@ -39,7 +39,7 @@ async def read_meme(query: schemes.ReadMeme) -> JSONResponse:
             {
                 "id": meme.id,
                 "title": meme.title,
-                "image_url": meme.image_url,
+                "image": str(meme.image),
                 "author_name": meme.author_name,
                 "created_at": meme.created_at.strftime("%Y-%m-%d %H:%M:%S.%f"),
                 "updated_at": meme.updated_at.strftime("%Y-%m-%d %H:%M:%S.%f"),
@@ -58,7 +58,7 @@ async def update_meme(query: schemes.UpdateMeme) -> JSONResponse:
                 session,
                 id=query.id,
                 title=query.title,
-                image_url=query.image_url,
+                image=query.image,
                 author_name=query.author_name,
             )
 
