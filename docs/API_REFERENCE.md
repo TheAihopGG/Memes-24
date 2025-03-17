@@ -94,6 +94,12 @@ JSON-data:
 }
 ```
 
+### GetRandomMeme
+
+|Method|Url|Description|
+|------|---|-----------|
+|GET|`/memes/random_meme`|Responses a random data|
+
 ### UpdateMeme
 
 |Method|Url|Description|
@@ -129,7 +135,7 @@ JSON-data:
 
 ## Suggested memes
 
-### CreateSuggestedMeme
+### SuggestMeme
 
 |Method|Url|Description|
 |------|---|-----------|
@@ -141,7 +147,8 @@ JSON-data:
 {
     "title": "...",
     "image_url": "...", // url to the image
-    "author_name": "..." // tell us who are you
+    "author_name": "...",
+    "app_token": "..."
 }
 ```
 
