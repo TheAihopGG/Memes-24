@@ -11,19 +11,23 @@ router = APIRouter(prefix=settings.prefixes.suggested_memes)
 
 @router.post("/suggest")
 async def suggest_meme(query: schemes.SuggestMeme) -> JSONResponse:
-    async with session_factory() as session:
-        suggested_meme = await SuggestedMemes.create(
-            session,
-            title=query.title,
-            image_url=query.image_url,
-            author_name=query.author_name,
-        )
+    if query.app_token == settings.app_token:
+        async with session_factory() as session:
+            suggested_meme = await SuggestedMemes.create(
+                session,
+                title=query.title,
+                image_url=query.image_url,
+                author_name=query.author_name,
+            )
 
-    if suggested_meme:
-        return JSONResponse({})
+        if suggested_meme:
+            return JSONResponse({})
+
+        else:
+            return JSONResponse({}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     else:
-        return JSONResponse({}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JSONResponse({}, status.HTTP_403_FORBIDDEN)
 
 
 @router.post("/approve")
