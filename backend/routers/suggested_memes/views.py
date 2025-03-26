@@ -1,7 +1,9 @@
-import routers.suggested_memes.schemes as schemes
-from crud import SuggestedMemes
-from core import settings
-from fastapi import APIRouter, status
+from typing import Annotated
+import routers.suggested_memes.schemes as schemes  # type: ignore
+from errors import InvalidContent  # type: ignore
+from crud import SuggestedMemes  # type: ignore
+from core import settings  # type: ignore
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from core import session_factory
 
@@ -34,13 +36,21 @@ async def suggest_meme(query: schemes.SuggestMeme) -> JSONResponse:
 async def approve_suggested_meme(query: schemes.ApproveSuggestedMeme) -> JSONResponse:
     if query.app_token == settings.app_token:
         async with session_factory() as session:
-            suggested_meme = await SuggestedMemes.approve(session, query.id)
+            try:
+                suggested_meme = await SuggestedMemes.approve(session, query.id)
 
-        if suggested_meme:
-            return JSONResponse({})
+            except InvalidContent as err:
+                if query.remove_invalid_images_urls:
+                    await SuggestedMemes.delete(session, query.id)
 
-        else:
-            return JSONResponse({}, status.HTTP_404_NOT_FOUND)
+                return JSONResponse({"detail": err}, status.HTTP_406_NOT_ACCEPTABLE)
+
+            else:
+                if suggested_meme:
+                    return JSONResponse({})
+
+                else:
+                    return JSONResponse({}, status.HTTP_404_NOT_FOUND)
 
     else:
         return JSONResponse({}, status.HTTP_403_FORBIDDEN)

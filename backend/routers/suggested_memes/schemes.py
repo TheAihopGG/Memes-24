@@ -5,10 +5,12 @@ class SuggestMeme(BaseModel):
     title: str
     image_url: str
     author_name: str
+    app_token: str
 
 
 class ApproveSuggestedMeme(BaseModel):
     id: int
+    remove_invalid_images_urls: bool
     app_token: str
 
 

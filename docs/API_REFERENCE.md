@@ -139,7 +139,7 @@ JSON-data:
 
 |Method|Url|Description|
 |------|---|-----------|
-|POST|`/memes/suggest`|Suggests a meme for adding to `Memes` table|
+|POST|`/suggested_memes/suggest`|Suggests a meme for adding to `Memes` table|
 
 JSON-data:
 
@@ -156,13 +156,14 @@ JSON-data:
 
 |Method|Url|Description|
 |------|---|-----------|
-|POST|`/memes/approve`|Removes Suggested meme with the specified id and adds it to memes table|
+|POST|`/suggested_memes/approve`|Removes Suggested meme with the specified id and adds it to memes table|
 
 JSON-data:
 
 ```json
 {
     "id": "...", // Suggested meme id, which you want to approve
+    "remove_invalid_images_urls": "true", // if true, suggested memes with invalid urls will be removed
     "app_token": "..."
 }
 ```
@@ -173,7 +174,7 @@ JSON-data:
 
 |Method|Url|Description|
 |------|---|-----------|
-|POST|`/memes/reject`|Rejects a Suggested meme|
+|POST|`/suggested_memes/reject`|Rejects a Suggested meme|
 
 JSON-data:
 
@@ -188,7 +189,7 @@ JSON-data:
 
 |Method|Url|Description|
 |------|---|-----------|
-|GET|`/memes/suggested_memes`|Rejects a Suggested meme|
+|GET|`/suggested_memes/all`|Returns all suggested memes|
 
 JSON-data:
 

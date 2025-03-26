@@ -1,11 +1,13 @@
 import asyncio
+import requests
+from errors import InvalidContent
 from datetime import datetime
 from core import (
     Meme,
     SuggestedMeme,
     Tag,
 )
-from sqlalchemy import select
+from sqlalchemy import Row, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from core import session_factory
 
@@ -92,7 +94,7 @@ class SuggestedMemes:
         session: AsyncSession,
         id: int,
         title: str | None = None,
-        image_url: str | None = None,
+        image: bytes | None = None,
         author_name: str | None = None,
     ) -> SuggestedMeme | None:
         suggested_meme = await session.get(
@@ -101,9 +103,8 @@ class SuggestedMemes:
         )
         if suggested_meme:
             suggested_meme.title = title or suggested_meme.title
-            suggested_meme.image_url = image_url or suggested_meme.image_url
+            suggested_meme.image = image or suggested_meme.image
             suggested_meme.author_name = author_name or suggested_meme.author_name
-            suggested_meme.updated_at = datetime.now()
             await session.commit()
 
         return suggested_meme
@@ -127,17 +128,17 @@ class SuggestedMemes:
     async def create(
         session: AsyncSession,
         title: str,
-        image_url: str,
+        image: str,
         author_name: str | None,
     ) -> SuggestedMeme:
-        requested_meme = SuggestedMeme(
+        suggested_meme = SuggestedMeme(
             title=title,
-            image_url=image_url,
+            image=image,
             author_name=author_name or "Unknown",
         )
-        session.add(requested_meme)
+        session.add(suggested_meme)
         await session.commit()
-        return requested_meme
+        return suggested_meme
 
     @staticmethod
     async def approve(
@@ -149,7 +150,7 @@ class SuggestedMemes:
             await Memes.create(
                 session,
                 title=suggested_meme.title,
-                image_url=suggested_meme.image_url,
+                image=suggested_meme.image,
                 author_name=suggested_meme.author_name,
             )
             await SuggestedMemes.delete(session, suggested_meme.id)
@@ -164,10 +165,11 @@ class SuggestedMemes:
         return await SuggestedMemes.delete(session, id)
 
     @staticmethod
-    async def get_all(session: AsyncSession) -> list[SuggestedMeme]:
-        return await session.execute(select(SuggestedMeme))
+    async def get_all(session: AsyncSession) -> Row[tuple[SuggestedMeme]] | None:
+        return (await session.execute(select(SuggestedMeme))).fetchone()
 
 
+# TODO: implement a tag system
 class Tags:
     @staticmethod
     async def create(
