@@ -1,6 +1,5 @@
 from typing import Annotated
 import routers.suggested_memes.schemes as schemes  # type: ignore
-from errors import InvalidContent  # type: ignore
 from crud import SuggestedMemes  # type: ignore
 from core import settings  # type: ignore
 from fastapi import APIRouter, Depends, Request, status
@@ -18,7 +17,7 @@ async def suggest_meme(query: schemes.SuggestMeme) -> JSONResponse:
             suggested_meme = await SuggestedMemes.create(
                 session,
                 title=query.title,
-                image_url=query.image_url,
+                image=bytes(query.image, "utf-8"),
                 author_name=query.author_name,
             )
 
@@ -36,21 +35,13 @@ async def suggest_meme(query: schemes.SuggestMeme) -> JSONResponse:
 async def approve_suggested_meme(query: schemes.ApproveSuggestedMeme) -> JSONResponse:
     if query.app_token == settings.app_token:
         async with session_factory() as session:
-            try:
-                suggested_meme = await SuggestedMemes.approve(session, query.id)
+            suggested_meme = await SuggestedMemes.approve(session, query.id)
 
-            except InvalidContent as err:
-                if query.remove_invalid_images_urls:
-                    await SuggestedMemes.delete(session, query.id)
-
-                return JSONResponse({"detail": err}, status.HTTP_406_NOT_ACCEPTABLE)
+            if suggested_meme:
+                return JSONResponse({})
 
             else:
-                if suggested_meme:
-                    return JSONResponse({})
-
-                else:
-                    return JSONResponse({}, status.HTTP_404_NOT_FOUND)
+                return JSONResponse({}, status.HTTP_404_NOT_FOUND)
 
     else:
         return JSONResponse({}, status.HTTP_403_FORBIDDEN)
@@ -80,7 +71,7 @@ async def get_suggested_memes(query: schemes.GetSuggestedMemes) -> JSONResponse:
                 {
                     "id": suggested_meme.id,
                     "title": suggested_meme.title,
-                    "image_url": suggested_meme.image_url,
+                    "image": suggested_meme.image,
                     "author_name": suggested_meme.author_name,
                     "created_at": suggested_meme.created_at.strftime(
                         "%Y-%m-%d %H:%M:%S.%f"

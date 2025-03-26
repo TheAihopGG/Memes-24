@@ -1,6 +1,5 @@
 import asyncio
 import requests
-from errors import InvalidContent
 from datetime import datetime
 from core import (
     Meme,
@@ -128,7 +127,7 @@ class SuggestedMemes:
     async def create(
         session: AsyncSession,
         title: str,
-        image: str,
+        image: bytes,
         author_name: str | None,
     ) -> SuggestedMeme:
         suggested_meme = SuggestedMeme(
